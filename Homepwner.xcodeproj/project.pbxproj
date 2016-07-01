@@ -294,6 +294,7 @@
 				E3FEE5571D26DB4700B57713 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
