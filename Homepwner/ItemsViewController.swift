@@ -25,24 +25,144 @@ class ItemsViewController: UITableViewController {
 		tableView.scrollIndicatorInsets = insets
 	}
 	
+	@IBAction func addNewItem(sender:AnyObject){
+		// Must first add a new item to the ItemStore to make sure that the datasource and the UITableView
+		// agree on the number of row
+		
+		// Create a new item and add it to the store
+		let newItem = itemStore.createItem()
+		
+		// Figure out where that item is in the array
+		if let index = itemStore.allItems.indexOf(newItem) {
+			let indexPath = NSIndexPath(forRow: index, inSection: 0)
+			
+			// Insert this new row into the table
+			tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+		}
+	}
+	
+	@IBAction func toggleEditingMode(sender:AnyObject){
+		// If currently in editing mode...
+		if editing{
+			// Change text of button to inform user of state
+			sender.setTitle("Edit", forState: .Normal)
+			// Turn off editing mode
+			setEditing(false, animated: true)
+		} else {
+			sender.setTitle("Done", forState: .Normal)
+			setEditing(true, animated: true)
+		}
+	}
+	
+	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+		return 2
+	}
+	
 	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return itemStore.allItems.count
+		if section == 0 {
+			return itemStore.allItems.count
+		} else {
+			return 1
+		}
+		
 	}
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		// Create an instance of UITableViewCell with default appearance
-		let cell = tableView.dequeueReusableCellWithIdentifier("UITableViewCell", forIndexPath: indexPath)
-		// dequeue... will check the pool to see wether a cell withthe correct reuse identifier already exists.
-		// If so it will dequeue this cell. If not, a new cell will be created an returned.
 		
-		// Set the text on the cell with the description of the item that is at the nth index of items,
-		// where n = row this cell will appear in on the tableview
-		let item = itemStore.allItems[indexPath.row]
+		if indexPath.section == 0 {
+			// Create an instance of UITableViewCell with default appearance
+			let cell = tableView.dequeueReusableCellWithIdentifier("UITableViewCell", forIndexPath: indexPath)
+			// dequeue... will check the pool to see wether a cell with the correct reuse identifier already exists.
+			// If so it will dequeue this cell. If not, a new cell will be created an returned.
+			
+			// Set the text on the cell with the description of the item that is at the nth index of items,
+			// where n = row this cell will appear in on the tableview
+			let item = itemStore.allItems[indexPath.row]
+			
+			cell.textLabel?.text = item.name
+			cell.detailTextLabel?.text = "$\(item.valueInDollars)"
+			
+			return cell
+		}
+		else {
+			let cell = tableView.dequeueReusableCellWithIdentifier("UniqueCell", forIndexPath: indexPath)
+			cell.textLabel?.text = "No more items!"
+			cell.textLabel?.font = UIFont.boldSystemFontOfSize(17)
+			cell.textLabel?.textAlignment = .Center
+			return cell
+		}
+	}
+	
+	override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+		if editingStyle == .Delete {
+			let item = itemStore.allItems[indexPath.row]
+			
+			let title = "Delete \(item.name)?"
+			let message = "Are you sure you want to delete this item?"
+			let ac = UIAlertController(title: title, message: message, preferredStyle: .ActionSheet)
+			
+			let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+			ac.addAction(cancelAction)
+			
+			let deleteAction = UIAlertAction(title: "Delete", style: .Destructive, handler: { (action) in
+				
+				// Remove the item from the store
+				self.itemStore.removeItem(item)
+				
+				// Also remove that row from the table view with an animation
+				self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+			})
+			ac.addAction(deleteAction)
+			
+			// Present the Alert Controller modally
+			presentViewController(ac, animated: true, completion: nil)
+			
+			
+		}
+	}
+	
+	override func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
 		
-		cell.textLabel?.text = item.name
-		cell.detailTextLabel?.text = "$\(item.valueInDollars)"
+		if destinationIndexPath.section == 0 {
+			// Update the model
+			itemStore.moveItemAtIndex(sourceIndexPath.row, toIndex: destinationIndexPath.row)
+		}
 		
-		return cell
+		// No confirmation required: the table view moves the row on its own authority and reports the move
+		// to the its datasource by calling this method.
+	}
+	
+	// Bronze Challenge: change the Delete label to Remove in the cells
+	override func tableView(tableView: UITableView, titleForDeleteConfirmationButtonForRowAtIndexPath indexPath: NSIndexPath) -> String? {
+		return "Remove"
+	}
+	
+	// Silver challenge: prevent fixed row to be moved
+	override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+		if indexPath.section == 0 {
+			return true
+		} else {
+			return false
+		}
+	}
+	
+	// Gold Challenge: 2 next delegate methods
+	// Prevent fixed row to be deleted
+	override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+		if indexPath.section == 0 {
+			return true
+		} else {
+			return false
+		}
+	}
+	
+	// Prevent items cell to be moved below fixed cell (which is in its own section)
+	override func tableView(tableView: UITableView, targetIndexPathForMoveFromRowAtIndexPath sourceIndexPath: NSIndexPath, toProposedIndexPath proposedDestinationIndexPath: NSIndexPath) -> NSIndexPath {
+		if sourceIndexPath.section != proposedDestinationIndexPath.section {
+			return sourceIndexPath
+		} else {
+			return proposedDestinationIndexPath
+		}
 	}
 	
 }
