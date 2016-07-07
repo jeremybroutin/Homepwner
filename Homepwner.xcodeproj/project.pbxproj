@@ -14,6 +14,7 @@
 		E3FEE5591D26DBC800B57713 /* ItemsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FEE5581D26DBC800B57713 /* ItemsViewController.swift */; };
 		E3FEE55B1D26DDE900B57713 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FEE55A1D26DDE900B57713 /* Item.swift */; };
 		E3FEE55D1D26E68000B57713 /* ItemStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FEE55C1D26E68000B57713 /* ItemStore.swift */; };
+		E3FEE5641D2F18F800B57713 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FEE5631D2F18F800B57713 /* ItemCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		E3FEE5581D26DBC800B57713 /* ItemsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemsViewController.swift; sourceTree = "<group>"; };
 		E3FEE55A1D26DDE900B57713 /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		E3FEE55C1D26E68000B57713 /* ItemStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemStore.swift; sourceTree = "<group>"; };
+		E3FEE5631D2F18F800B57713 /* ItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 			children = (
 				E3FEE5461D26DB4700B57713 /* AppDelegate.swift */,
 				E3FEE5581D26DBC800B57713 /* ItemsViewController.swift */,
+				E3FEE5631D2F18F800B57713 /* ItemCell.swift */,
 				E3FEE55A1D26DDE900B57713 /* Item.swift */,
 				E3FEE55C1D26E68000B57713 /* ItemStore.swift */,
 				E3FEE54A1D26DB4700B57713 /* Main.storyboard */,
@@ -145,6 +148,7 @@
 				E3FEE55B1D26DDE900B57713 /* Item.swift in Sources */,
 				E3FEE55D1D26E68000B57713 /* ItemStore.swift in Sources */,
 				E3FEE5471D26DB4700B57713 /* AppDelegate.swift in Sources */,
+				E3FEE5641D2F18F800B57713 /* ItemCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,6 +298,7 @@
 				E3FEE5571D26DB4700B57713 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

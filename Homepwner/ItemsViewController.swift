@@ -23,6 +23,9 @@ class ItemsViewController: UITableViewController {
 		let insets = UIEdgeInsets(top: statusBarHeight, left: 0, bottom: 0, right: 0)
 		tableView.contentInset = insets
 		tableView.scrollIndicatorInsets = insets
+		
+		tableView.rowHeight = UITableViewAutomaticDimension // default value for rowHeight (not necessary)
+		tableView.estimatedRowHeight = 65 // can improve performance (perf cost to be deferred until users start scrolling and the table view starts loading again)
 	}
 	
 	@IBAction func addNewItem(sender:AnyObject){
@@ -71,7 +74,7 @@ class ItemsViewController: UITableViewController {
 		
 		if indexPath.section == 0 {
 			// Create an instance of UITableViewCell with default appearance
-			let cell = tableView.dequeueReusableCellWithIdentifier("UITableViewCell", forIndexPath: indexPath)
+			let cell = tableView.dequeueReusableCellWithIdentifier("ItemCell", forIndexPath: indexPath) as! ItemCell
 			// dequeue... will check the pool to see wether a cell with the correct reuse identifier already exists.
 			// If so it will dequeue this cell. If not, a new cell will be created an returned.
 			
@@ -79,8 +82,9 @@ class ItemsViewController: UITableViewController {
 			// where n = row this cell will appear in on the tableview
 			let item = itemStore.allItems[indexPath.row]
 			
-			cell.textLabel?.text = item.name
-			cell.detailTextLabel?.text = "$\(item.valueInDollars)"
+			cell.nameLabel.text = item.name
+			cell.serialNumberLabel.text = item.serialNumber
+			cell.valueLabel.text = "$\(item.valueInDollars)"
 			
 			return cell
 		}
