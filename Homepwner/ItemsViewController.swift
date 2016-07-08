@@ -84,7 +84,11 @@ class ItemsViewController: UITableViewController {
 			
 			cell.nameLabel.text = item.name
 			cell.serialNumberLabel.text = item.serialNumber
-			cell.valueLabel.text = "$\(item.valueInDollars)"
+			// cell.valueLabel.text = "$\(item.valueInDollars)" // replacing this line by the below
+			cell.value = item.valueInDollars
+			
+			// Update the cell labels to the new preferrerd text size
+			cell.updateLabels()
 			
 			return cell
 		}
