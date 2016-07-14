@@ -28,6 +28,13 @@ class ItemsViewController: UITableViewController {
 		tableView.estimatedRowHeight = 65 // can improve performance (perf cost to be deferred until users start scrolling and the table view starts loading again)
 	}
 	
+	// Reload table data when VC is on top of nav stack (for item edition updates)
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		
+		tableView.reloadData()
+	}
+	
 	@IBAction func addNewItem(sender:AnyObject){
 		// Must first add a new item to the ItemStore to make sure that the datasource and the UITableView
 		// agree on the number of row
@@ -170,6 +177,18 @@ class ItemsViewController: UITableViewController {
 			return sourceIndexPath
 		} else {
 			return proposedDestinationIndexPath
+		}
+	}
+	
+	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+		if segue.identifier == "ShowItem" {
+			// Figure out which row was tapped
+			if let row = tableView.indexPathForSelectedRow?.row {
+				// Get the item associated with this row and pass it along
+				let item = itemStore.allItems[row]
+				let detailViewController = segue.destinationViewController as! DetailViewController
+				detailViewController.item = item
+			}
 		}
 	}
 	
