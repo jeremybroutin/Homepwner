@@ -14,6 +14,9 @@ class Item: NSObject {
 	var serialNumber: String?
 	var dateCreated: NSDate
 	
+	// When a VC wants an image from the store, it will ask the item for the key and search the cache for the image
+	var itemKey: String
+	
 	// Designated initializer:
 	// ensures that all properties in the class have a value
 	// and then calls a designated initializer on its superclass (if it has one).
@@ -23,6 +26,7 @@ class Item: NSObject {
 		self.valueInDollars = valueInDollars
 		self.serialNumber = serialNumber
 		self.dateCreated = NSDate()
+		self.itemKey = NSUUID().UUIDString // Universally unique identifiers
 		
 		super.init()
 	}

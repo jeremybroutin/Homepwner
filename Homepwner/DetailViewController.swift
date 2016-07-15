@@ -8,12 +8,16 @@
 
 import UIKit
 
-class DetailViewController: UIViewController, UITextFieldDelegate {
+class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+	
+	// UIImagePickerController's delegate property is actually inherited from its superclass: UINavigationController
+	// Its inherited delegate is declared to reference an object that conforms to UINavigationControllerDelegate
 	
 	@IBOutlet var nameField: CustomTextField!
 	@IBOutlet var serialNumberField: CustomTextField!
 	@IBOutlet var valueField: CustomTextField!
 	@IBOutlet var dateLabel: UILabel!
+	@IBOutlet var imageView: UIImageView!
 	
 	let numberFormatter: NSNumberFormatter = {
 		let formatter = NSNumberFormatter()
@@ -37,6 +41,8 @@ class DetailViewController: UIViewController, UITextFieldDelegate {
 		}
 	}
 	
+	var imageStore: ImageStore!
+	
 	// Set the text on each textfield to the appropriate value from the Item instance
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
@@ -47,6 +53,13 @@ class DetailViewController: UIViewController, UITextFieldDelegate {
 		valueField.text = numberFormatter.stringFromNumber(item.valueInDollars)
 		// dateLabel.text = "\(item.dateCreated)" // replace by formatter below
 		dateLabel.text = dateFormatter.stringFromDate(item.dateCreated)
+		
+		// Get the item key
+		let key = item.itemKey
+		
+		// I fthere is an associated with the item, display it on the image view
+		let imageToDisplay = imageStore.imageForKey(key)
+		imageView.image = imageToDisplay
 	}
 	
 	// Called when VC is about to be popped out of the nav stack
@@ -73,6 +86,22 @@ class DetailViewController: UIViewController, UITextFieldDelegate {
 		// convenient way to dismiss the keyboard wuthout having to know which text field is the first responder.
 	}
 	
+	@IBAction func takePicture(sender: UIBarButtonItem) {
+		let imagePicker = UIImagePickerController()
+		// If the device has a camera take a picture; otherwise,
+		// just pick from photo library
+		if UIImagePickerController.isSourceTypeAvailable(.Camera){
+			imagePicker.sourceType = .Camera
+		} else {
+			imagePicker.sourceType = .PhotoLibrary
+		}
+		
+		imagePicker.delegate = self
+		
+		// Place image picker on the screen
+		presentViewController(imagePicker, animated: true, completion: nil)
+	}
+	
 	// When a text field is touched, it automatically becomes the first responder
 	func textFieldShouldReturn(textField: UITextField) -> Bool {
 		
@@ -87,6 +116,20 @@ class DetailViewController: UIViewController, UITextFieldDelegate {
 			let datePickerViewController = segue.destinationViewController as! DatePickerViewController
 			datePickerViewController.item = item
 		}
+	}
+	
+	func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+		// Get picked image from info dictionary
+		let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+		
+		// Store the image in the imageStore for the item's key
+		imageStore.setImage(image, forKey: item.itemKey)
+		
+		// Put that image on the screen in the image view
+		imageView.image = image
+		
+		// Take image picker off the screen
+		dismissViewControllerAnimated(true, completion: nil)
 	}
 	
 }

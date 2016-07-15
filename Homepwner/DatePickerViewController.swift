@@ -15,7 +15,6 @@ class DatePickerViewController: UIViewController {
 			navigationItem.title = item.name
 		}
 	}
-	
 	var backButton: UIBarButtonItem!
 	var saveButton: UIBarButtonItem!
 	
@@ -32,7 +31,6 @@ class DatePickerViewController: UIViewController {
 		
 		saveButton = UIBarButtonItem(barButtonSystemItem: .Save, target: self, action: #selector(DatePickerViewController.saveDate))
 		navigationItem.rightBarButtonItem = saveButton
-		
 		
 		// Insert instruction text and accessible font
 		instructionLabel.text = "Edit \(item.name) date"
@@ -68,8 +66,6 @@ class DatePickerViewController: UIViewController {
 		else {
 			navigationController?.popViewControllerAnimated(true)
 		}
-		
-		
 	}
 	
 }

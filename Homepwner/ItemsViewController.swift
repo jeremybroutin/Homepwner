@@ -15,6 +15,8 @@ class ItemsViewController: UITableViewController {
 	// To implement the DIP, we use dependency injection, where the lower-level object (the store)
 	// is passed to the higher-level oject (ItemsVC) through a property.
 	
+	var imageStore: ImageStore!
+	
 	// VC expose a bar bytton item that toggles automatiucally the editing mode
 	// However there is no way to access it in Interface Builder so we need to code it
 	required init?(coder aDecoder: NSCoder){
@@ -134,6 +136,9 @@ class ItemsViewController: UITableViewController {
 				// Remove the item from the store
 				self.itemStore.removeItem(item)
 				
+				// Remove the item's image from the image store
+				self.imageStore.deleteImageForKey(item.itemKey)
+				
 				// Also remove that row from the table view with an animation
 				self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
 			})
@@ -198,6 +203,7 @@ class ItemsViewController: UITableViewController {
 				let item = itemStore.allItems[row]
 				let detailViewController = segue.destinationViewController as! DetailViewController
 				detailViewController.item = item
+				detailViewController.imageStore = imageStore
 			}
 		}
 	}
