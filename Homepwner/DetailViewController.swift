@@ -8,11 +8,11 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+class DetailViewController: UIViewController, UITextFieldDelegate {
 	
-	@IBOutlet var nameField: UITextField!
-	@IBOutlet var serialNumberField: UITextField!
-	@IBOutlet var valueField: UITextField!
+	@IBOutlet var nameField: CustomTextField!
+	@IBOutlet var serialNumberField: CustomTextField!
+	@IBOutlet var valueField: CustomTextField!
 	@IBOutlet var dateLabel: UILabel!
 	
 	let numberFormatter: NSNumberFormatter = {
@@ -31,7 +31,11 @@ class DetailViewController: UIViewController {
 	}()
 	
 	// Hold a reference to the Item that is being displayed
-	var item: Item!
+	var item: Item! {
+		didSet{
+			navigationItem.title = item.name // dynamic set nav bar title based on item name
+		}
+	}
 	
 	// Set the text on each textfield to the appropriate value from the Item instance
 	override func viewWillAppear(animated: Bool) {
@@ -45,10 +49,14 @@ class DetailViewController: UIViewController {
 		dateLabel.text = dateFormatter.stringFromDate(item.dateCreated)
 	}
 	
-	// "Save" changes to the item when VC is about to be popped out of the nav stack
+	// Called when VC is about to be popped out of the nav stack
 	override func viewWillDisappear(animated: Bool) {
 		super.viewWillDisappear(animated)
 		
+		// Clear first responder
+		view.endEditing(true)
+		
+		// Save changes to the item
 		item.name = nameField.text ?? ""
 		item.serialNumber = serialNumberField.text
 		
@@ -58,4 +66,27 @@ class DetailViewController: UIViewController {
 			item.valueInDollars = 0
 		}
 	}
+	
+	// Dismiss keyboard on any tap but the keyboard
+	@IBAction func backgroundTapped(sender: UITapGestureRecognizer) {
+		view.endEditing(true)
+		// convenient way to dismiss the keyboard wuthout having to know which text field is the first responder.
+	}
+	
+	// When a text field is touched, it automatically becomes the first responder
+	func textFieldShouldReturn(textField: UITextField) -> Bool {
+		
+		// removing the first responder attribution allows the keyboard dismisal
+		textField.resignFirstResponder()
+		
+		return true
+	}
+	
+	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+		if segue.identifier == "ShowDatePicker" {
+			let datePickerViewController = segue.destinationViewController as! DatePickerViewController
+			datePickerViewController.item = item
+		}
+	}
+	
 }

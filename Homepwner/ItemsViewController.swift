@@ -15,14 +15,23 @@ class ItemsViewController: UITableViewController {
 	// To implement the DIP, we use dependency injection, where the lower-level object (the store)
 	// is passed to the higher-level oject (ItemsVC) through a property.
 	
+	// VC expose a bar bytton item that toggles automatiucally the editing mode
+	// However there is no way to access it in Interface Builder so we need to code it
+	required init?(coder aDecoder: NSCoder){
+		super.init(coder: aDecoder)
+		
+		navigationItem.leftBarButtonItem = editButtonItem()
+	}
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
+//		Update: no need for this inset anymore now that we have the navigationBar
 		// Get the height of the status bar
-		let statusBarHeight = UIApplication.sharedApplication().statusBarFrame.height
-		let insets = UIEdgeInsets(top: statusBarHeight, left: 0, bottom: 0, right: 0)
-		tableView.contentInset = insets
-		tableView.scrollIndicatorInsets = insets
+//		let statusBarHeight = UIApplication.sharedApplication().statusBarFrame.height
+//		let insets = UIEdgeInsets(top: statusBarHeight, left: 0, bottom: 0, right: 0)
+//		tableView.contentInset = insets
+//		tableView.scrollIndicatorInsets = insets
 		
 		tableView.rowHeight = UITableViewAutomaticDimension // default value for rowHeight (not necessary)
 		tableView.estimatedRowHeight = 65 // can improve performance (perf cost to be deferred until users start scrolling and the table view starts loading again)
@@ -51,18 +60,19 @@ class ItemsViewController: UITableViewController {
 		}
 	}
 	
-	@IBAction func toggleEditingMode(sender:AnyObject){
-		// If currently in editing mode...
-		if editing{
-			// Change text of button to inform user of state
-			sender.setTitle("Edit", forState: .Normal)
-			// Turn off editing mode
-			setEditing(false, animated: true)
-		} else {
-			sender.setTitle("Done", forState: .Normal)
-			setEditing(true, animated: true)
-		}
-	}
+//	Update: no need for this inset anymore now that we have the navigationBar
+//	@IBAction func toggleEditingMode(sender:AnyObject){
+//		// If currently in editing mode...
+//		if editing{
+//			// Change text of button to inform user of state
+//			sender.setTitle("Edit", forState: .Normal)
+//			// Turn off editing mode
+//			setEditing(false, animated: true)
+//		} else {
+//			sender.setTitle("Done", forState: .Normal)
+//			setEditing(true, animated: true)
+//		}
+//	}
 	
 	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
 		return 2

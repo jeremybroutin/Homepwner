@@ -12,7 +12,7 @@ class Item: NSObject {
 	var name: String
 	var valueInDollars: Int
 	var serialNumber: String?
-	let dateCreated: NSDate
+	var dateCreated: NSDate
 	
 	// Designated initializer:
 	// ensures that all properties in the class have a value
