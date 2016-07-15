@@ -98,6 +98,9 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
 		
 		imagePicker.delegate = self
 		
+		// Bronze challenge: allow edition of selected image
+		imagePicker.allowsEditing = true
+		
 		// Place image picker on the screen
 		presentViewController(imagePicker, animated: true, completion: nil)
 	}
@@ -120,7 +123,9 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
 	
 	func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
 		// Get picked image from info dictionary
-		let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+		// let image = info[UIImagePickerControllerOriginalImage] as! UIImage
+		// Bronze Challenge: selected the edited image instead
+		let image = info[UIImagePickerControllerEditedImage] as! UIImage
 		
 		// Store the image in the imageStore for the item's key
 		imageStore.setImage(image, forKey: item.itemKey)
