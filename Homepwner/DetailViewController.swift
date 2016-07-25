@@ -10,6 +10,8 @@ import UIKit
 
 class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
 	
+	// MARK: - Properties
+	
 	// UIImagePickerController's delegate property is actually inherited from its superclass: UINavigationController
 	// Its inherited delegate is declared to reference an object that conforms to UINavigationControllerDelegate
 	
@@ -18,6 +20,7 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
 	@IBOutlet var valueField: CustomTextField!
 	@IBOutlet var dateLabel: UILabel!
 	@IBOutlet var imageView: UIImageView!
+	@IBOutlet var clearImageButton: UIBarButtonItem!
 	
 	let numberFormatter: NSNumberFormatter = {
 		let formatter = NSNumberFormatter()
@@ -43,6 +46,8 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
 	
 	var imageStore: ImageStore!
 	
+	// MARK: - App Life Cycle
+	
 	// Set the text on each textfield to the appropriate value from the Item instance
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
@@ -57,9 +62,14 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
 		// Get the item key
 		let key = item.itemKey
 		
-		// I fthere is an associated with the item, display it on the image view
-		let imageToDisplay = imageStore.imageForKey(key)
-		imageView.image = imageToDisplay
+		// If there is an associated with the item, display it on the image view
+		if let imageToDisplay = imageStore.imageForKey(key){
+			imageView.image = imageToDisplay
+			clearImageButton.enabled = true
+		} else {
+			clearImageButton.enabled = false
+		}
+		
 	}
 	
 	// Called when VC is about to be popped out of the nav stack
@@ -80,6 +90,8 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
 		}
 	}
 	
+	// MARK: - Actions
+	
 	// Dismiss keyboard on any tap but the keyboard
 	@IBAction func backgroundTapped(sender: UITapGestureRecognizer) {
 		view.endEditing(true)
@@ -92,18 +104,35 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
 		// just pick from photo library
 		if UIImagePickerController.isSourceTypeAvailable(.Camera){
 			imagePicker.sourceType = .Camera
+			// Gold challenge: add cameraOverlayView
+			let cameraOverlayView = UIImageView(image: UIImage(named: "Crosshair"))
+			cameraOverlayView.contentMode = .Center
+			cameraOverlayView.frame = imagePicker.view.frame
+			//cameraOverlayView.frame = imagePicker.cameraOverlayView!.frame
+			imagePicker.cameraOverlayView = cameraOverlayView
 		} else {
 			imagePicker.sourceType = .PhotoLibrary
 		}
-		
-		imagePicker.delegate = self
-		
 		// Bronze challenge: allow edition of selected image
 		imagePicker.allowsEditing = true
-		
+		imagePicker.delegate = self
+
 		// Place image picker on the screen
 		presentViewController(imagePicker, animated: true, completion: nil)
 	}
+	
+	// Silver Challenge: add a button to clear the image for an item
+	@IBAction func deletePicture(sender: UIBarButtonItem) {
+		// Remove image from ImageView
+		imageView.image = nil
+		
+		// Remove image from cache
+		imageStore.deleteImageForKey(item.itemKey)
+		
+		// Disable clear button
+		clearImageButton.enabled = false
+	}
+	
 	
 	// When a text field is touched, it automatically becomes the first responder
 	func textFieldShouldReturn(textField: UITextField) -> Bool {
@@ -114,12 +143,16 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
 		return true
 	}
 	
+	// MARK: - Segue
+	
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 		if segue.identifier == "ShowDatePicker" {
 			let datePickerViewController = segue.destinationViewController as! DatePickerViewController
 			datePickerViewController.item = item
 		}
 	}
+	
+	// MARK: - Image Picker
 	
 	func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
 		// Get picked image from info dictionary
@@ -130,8 +163,9 @@ class DetailViewController: UIViewController, UITextFieldDelegate, UINavigationC
 		// Store the image in the imageStore for the item's key
 		imageStore.setImage(image, forKey: item.itemKey)
 		
-		// Put that image on the screen in the image view
+		// Put that image on the screen in the image view and enable clear button
 		imageView.image = image
+		clearImageButton.enabled = true
 		
 		// Take image picker off the screen
 		dismissViewControllerAnimated(true, completion: nil)

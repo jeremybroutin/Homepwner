@@ -8,7 +8,10 @@
 
 import UIKit
 
-class Item: NSObject {
+class Item: NSObject, NSCoding {
+	
+	// MARK: - Properties
+	
 	var name: String
 	var valueInDollars: Int
 	var serialNumber: String?
@@ -16,6 +19,8 @@ class Item: NSObject {
 	
 	// When a VC wants an image from the store, it will ask the item for the key and search the cache for the image
 	var itemKey: String
+	
+	// MARK: - Initializers
 	
 	// Designated initializer:
 	// ensures that all properties in the class have a value
@@ -56,5 +61,27 @@ class Item: NSObject {
 		else {
 			self.init(name: "", valueInDollars: 0, serialNumber: nil)
 		}
+	}
+	
+	// MARK: - NSCoding protocol
+	
+	func encodeWithCoder(aCoder: NSCoder) {
+		aCoder.encodeObject(name, forKey: "name")
+		aCoder.encodeObject(dateCreated, forKey: "dateCreated")
+		aCoder.encodeObject(itemKey, forKey: "itemKey")
+		aCoder.encodeObject(serialNumber, forKey: "serialNumber")
+		
+		aCoder.encodeInteger(valueInDollars, forKey: "valueInDollars")
+	}
+	
+	required init(coder aDecoder: NSCoder){
+		name = aDecoder.decodeObjectForKey("name") as! String
+		dateCreated = aDecoder.decodeObjectForKey("dateCreated") as! NSDate
+		itemKey = aDecoder.decodeObjectForKey("itemKey") as! String
+		serialNumber = aDecoder.decodeObjectForKey("serialNumber") as! String?
+		
+		valueInDollars = aDecoder.decodeIntegerForKey("valueInDollars")
+		
+		super.init()
 	}
 }
